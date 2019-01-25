@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <title></title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Starter Template for Bootstrap</title>
+        <!-- Bootstrap core CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <link rel="stylesheet" type="text/css" href="./assets/css/app.css">
+    </head>
+    <body>
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <span class="navbar-brand">Contact manager</span>
+                </div>
+            </div>
+        </nav>
+       <!--App Container-->
+        <div id="app-container">
+            <div id="main-region" class="container">
+                <p>Here is static content in the web page. You'll notice that it gets replaced by our app as soon as we start it.</p>
+            </div>
+        </div>
+        <!--Template-->
+        <!-- <script type="text/template" id="contact-list-template">
+            <li> <%- firstName %> <%- lastName %> </li>
+        </script> -->
+        <script type="text/template" id="contact-list-template">
+            <%- firstName %> <%- lastName %>
+        </script>
+        <!--Vendor-->
+        <script type="text/javascript" src="assets/js/vendor/jquery.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <script type="text/javascript" src="assets/js/vendor/underscore.js"></script>
+        <script type="text/javascript" src="assets/js/vendor/backbone.js"></script>
+        <script type="text/javascript" src="assets/js/vendor/backbone.radio.js"></script>
+        <script type="text/javascript" src="assets/js/vendor/backbone.marionette.js"></script>
+        <script type="text/javascript" src="assets/js/vendor/marionette.templatecache.js"></script>
+        <script type="text/javascript">
+            const log = console.log;
+
+            const { View, Application, CollectionView } = Mn; //object destructing
+            const { Model, Collection } = Backbone;
+
+            const ContactManager = new Application({                
+                region: '#main-region',// define root region
+
+                onStart: function(app, options) {
+                    this.showView(options);
+                }
+            });
+
+            /*-- Model and Collection --*/
+            const Contact = Model.extend({//Model
+                defaults: {
+                    phoneNumber: 'No phone number!'
+                }
+            });
+            
+            const ContactCollection = Collection.extend({//Collection
+                model: Contact,
+
+                // comparator: 'firstName'// sorting a collection,
+                // comparator: function(a, b) { // _.sort()
+                //     let firstName1 = a.get('firstName')
+                //     let firstName2 = b.get('firstName')
+                //     let firstSort = firstName1.localeCompare(firstName2);
+
+                //     let lastName1 = a.get('lastName');
+                //     let lastName2 = b.get('lastName');
+                //     if(firstSort == 0) { //0 if the two strings are equal
+                //         return lastName1.localeCompare(lastName2);
+                //     }
+                //     return firstSort;
+                // }
+                comparator: function(contact) { //actually based on every char
+                    return contact.get('firstName') + ' ' + contact.get('lastName');
+                }
+            });
+
+            let contacts = new ContactCollection([
+                {
+                    firstName: 'Bob',
+                    lastName: 'Steve',
+                    phoneNumber: '666-1334'
+                },
+                {
+                    firstName: 'Alice',
+                    lastName: 'Arten',
+                    phoneNumber: '211-1234'
+                },
+                {
+                    firstName: 'Alice',
+                    lastName: 'Tampen',
+                    phoneNumber: '111-1234'
+                },
+                {
+                    firstName: 'Alice',
+                    lastName: 'Smith',
+                    phoneNumber: '111-1234'
+                },
+                {
+                    firstName: 'Alice',
+                    lastName: 'Artsy',
+                    phoneNumber: '111-1234'
+                },
+                {
+                    firstName: 'Charlie',
+                    lastName: 'Campbell',
+                    phoneNumber: '000-9834'
+                }
+            ]);
+
+            /*-- View and Collection View --*/
+            const ContactView = View.extend({ //Child View
+                tagName:'li',
+                className: 'class1 class2',
+                template: _.template($('#contact-list-template').html()),
+                ui: {//sudo naming way with ui mixin
+                    "phoneNumber": "li"
+                },
+                events: {//Common Events
+                    'click': 'alertPhoneNumber',
+                    // 'click @ui.phoneNumber': 'alertPhoneNumber'
+                },
+                alertPhoneNumber: function() {
+                    alert(this.model.escape("phoneNumber"));
+                }
+            });
+
+            const ContactsView = CollectionView.extend({//Collection View
+                tagName: 'ul',
+                childView: ContactView,
+                collection: contacts
+            });
+
+            let contactsListView = new ContactsView();
+
+            ContactManager.start(contactsListView);
+        </script>
+    </body>
+</html>

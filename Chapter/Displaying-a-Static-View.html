@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <title></title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Starter Template for Bootstrap</title>
+        <!-- Bootstrap core CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <link rel="stylesheet" type="text/css" href="./assets/css/app.css">
+    </head>
+    <body>
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <span class="navbar-brand">Contact manager</span>
+                </div>
+            </div>
+        </nav>
+       
+        <div id="app-container">
+            <ul id="main-region" class="container">
+                <p>Here is static content in the web page. You'll notice that it gets replaced by our app as soon as we start it.</p>
+            </ul>
+        </div>
+        
+        <script type="text/template" id="static-template">
+            <p>This is text that was rendered by our Marionette app.</p>
+        </script>
+        <script type="text/template" id="different-static-template">
+            <p>Text from a different template...</p>
+        </script>
+        <script type="text/template" id="list-item-template">
+            <li>item</li>
+        </script>
+
+        <script type="text/javascript" src="assets/js/vendor/jquery.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <script type="text/javascript" src="assets/js/vendor/underscore.js"></script>
+        <script type="text/javascript" src="assets/js/vendor/backbone.js"></script>
+        <script type="text/javascript" src="assets/js/vendor/backbone.radio.js"></script>
+        <script type="text/javascript" src="assets/js/vendor/backbone.marionette.js"></script>
+        <script type="text/javascript" src="assets/js/vendor/marionette.templatecache.js"></script>
+
+        <script type="text/javascript">
+            const log = console.log;
+
+            const Application = Mn.Application;
+            const View = Mn.View;//No ItemView anymore
+            const App = Application.extend({
+                region: '#main-region',
+                onStart() {
+                    Backbone.history.start();
+                    // const mainRegion = this.getRegion();
+                    // mainRegion.show(new StaticView());
+                    this.showView(new StaticView({
+                        tagName: 'ul',
+                        template: _.template($('#list-item-template').html())
+                    }));// v4
+                }
+            });
+
+            const StaticView = View.extend({
+                id:"list-view",
+                template: _.template($('#static-template').html())// v4
+            });
+
+            const ContactManager = new App();
+
+            ContactManager.start();
+        </script>
+    </body>
+</html>

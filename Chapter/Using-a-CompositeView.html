@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <title></title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Starter Template for Bootstrap</title>
+        <!-- Bootstrap core CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <link rel="stylesheet" type="text/css" href="./assets/css/app.css">
+    </head>
+    <body>
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <span class="navbar-brand">Contact manager</span>
+                </div>
+            </div>
+        </nav>
+       <!--App Container-->
+        <div id="app-container">
+            <div id="main-region" class="container">
+                <p>Here is static content in the web page. You'll notice that it gets replaced by our app as soon as we start it.</p>
+            </div>
+        </div>
+
+        <!--Template-->
+        <script type="text/template" id="contact-list-template">
+            <td><%- firstName %></td> <td><%- lastName %></td>
+        </script>
+        <script type="text/template" id="contact-list">
+            <thead>
+                <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </script>
+
+        <!-- Exercise -->
+        <!-- <script type="text/template" id="contact-list">
+            <p>Here is the list of all the contacts we have information for:</p>
+            <ul></ul>
+        </script> -->
+
+        <!--Vendor-->
+        <script type="text/javascript" src="assets/js/vendor/jquery.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <script type="text/javascript" src="assets/js/vendor/underscore.js"></script>
+        <script type="text/javascript" src="assets/js/vendor/backbone.js"></script>
+        <script type="text/javascript" src="assets/js/vendor/backbone.radio.js"></script>
+        <script type="text/javascript" src="assets/js/vendor/backbone.marionette.js"></script>
+        <script type="text/javascript" src="assets/js/vendor/marionette.templatecache.js"></script>
+        <!-- <script type="text/javascript" src="./assets/js/app.js"></script> -->
+        <script type="text/javascript">
+            const log = console.log;
+
+            const { View, Application, CollectionView } = Mn; //object destructing
+            const { Model, Collection } = Backbone;
+
+            const _template = (target) => { return _.template($(target).html()) } //shorten the template code
+
+            // import { ContactManager } from './assets/js/app.js';
+            const ContactManager = new Application({                
+                region: '#main-region',// define root region
+
+                onStart: function(app, options) {
+                    this.showView(options);
+                }
+            });
+
+            /*-- Model and Collection --*/
+            const Contact = Model.extend({//Model
+                defaults: {
+                    phoneNumber: 'No phone number!'
+                }
+            });
+            
+            const ContactCollection = Collection.extend({//Collection
+                model: Contact,
+
+                comparator: function(contact) { //actually based on every char
+                    return contact.get('firstName') + ' ' + contact.get('lastName');
+                }
+            });
+
+            let contacts = new ContactCollection([
+                {
+                    firstName: 'Bob',
+                    lastName: 'Steve',
+                    phoneNumber: '666-1334'
+                },
+                {
+                    firstName: 'Alice',
+                    lastName: 'Arten',
+                    phoneNumber: '211-1234'
+                },
+                {
+                    firstName: 'Alice',
+                    lastName: 'Tampen',
+                    phoneNumber: '111-1234'
+                },
+                {
+                    firstName: 'Alice',
+                    lastName: 'Smith',
+                    phoneNumber: '111-1234'
+                },
+                {
+                    firstName: 'Alice',
+                    lastName: 'Artsy',
+                    phoneNumber: '111-1234'
+                },
+                {
+                    firstName: 'Charlie',
+                    lastName: 'Campbell',
+                    phoneNumber: '000-9834'
+                }
+            ]);
+
+            /*-- View and Collection View --*/
+            const ContactView = View.extend({ //Child View
+                tagName:'tr',
+                template: _template('#contact-list-template'),
+                events: {
+                    "click": "highlightName",
+                    "click td": "alertCellText"//Exercise: p.53
+                },
+                highlightName: function(e) {
+                    e.preventDefault();
+                    this.$el.toggleClass('warning');
+                },
+                alertCellText:function(e) {//Exercise: p.53
+                    alert($(e.target).text());
+                }
+            });
+
+            const ContactsView = CollectionView.extend({//Collection View
+                tagName: 'table',
+                className: 'table table-hover',
+                template: _template('#contact-list'),
+                childView: ContactView,
+                collection: contacts,
+                childViewContainer: 'tbody' //define where to render child views
+            });
+
+            // /*-- Exercise --*/
+            // const ContactView = View.extend({ //Child View
+            //     tagName:'li',
+            //     template: _template('#contact-list-template')
+            // });
+
+            // const ContactsView = CollectionView.extend({//Collection View
+            //     tagName: 'div',
+            //     className: 'table table-hover',
+            //     template: _template('#contact-list'),
+            //     childView: ContactView,
+            //     collection: contacts,
+            //     childViewContainer: 'ul' //define where to render child views
+            // });
+
+            let contactsListView = new ContactsView();
+
+            ContactManager.start(contactsListView);
+        </script>
+    </body>
+</html>

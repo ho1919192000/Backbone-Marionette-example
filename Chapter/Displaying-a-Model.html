@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <title></title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Starter Template for Bootstrap</title>
+        <!-- Bootstrap core CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <link rel="stylesheet" type="text/css" href="./assets/css/app.css">
+    </head>
+    <body>
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <span class="navbar-brand">Contact manager</span>
+                </div>
+            </div>
+        </nav>
+       <!--App Container-->
+        <div id="app-container">
+            <div id="main-region" class="container">
+                <p>Here is static content in the web page. You'll notice that it gets replaced by our app as soon as we start it.</p>
+            </div>
+        </div>
+        <!--Template-->
+        <script type="text/template" id="contact-template">
+            <p class="employeeName"><%- firstName %> <%- lastName %></p>
+        </script>
+        <!--Vendor-->
+        <script type="text/javascript" src="assets/js/vendor/jquery.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <script type="text/javascript" src="assets/js/vendor/underscore.js"></script>
+        <script type="text/javascript" src="assets/js/vendor/backbone.js"></script>
+        <script type="text/javascript" src="assets/js/vendor/backbone.radio.js"></script>
+        <script type="text/javascript" src="assets/js/vendor/backbone.marionette.js"></script>
+        <script type="text/javascript" src="assets/js/vendor/marionette.templatecache.js"></script>
+        <script type="text/javascript">
+            const log = console.log;
+
+            const { View, Application } = Mn; //object destructing
+            const { Model, Collection } = Backbone;
+
+            const ContactManager = new Application({                region: '#main-region',
+
+                onStart: function(app, options) {
+                    this.showView(options);
+                }
+            });
+
+            const Contact = Model.extend({
+                defaults: {
+                    phoneNumber: 'No phone number!'
+                }
+            });
+            
+            let alice = new Contact({
+                firstName: 'Alice',
+                lastName: 'Arten',
+                phoneNumber: '111-1234'
+            })
+            let ben = new Contact({
+                firstName: 'Ben',
+                lastName: 'Jack',
+            })
+
+            const ContactView = View.extend({ //Class: Behavior
+                template: _.template($('#contact-template').html()),
+                ui: {
+                    "displayPhoneNumber": ".employeeName"
+                },
+                events: {
+                    'click @ui.displayPhoneNumber': 'alertPhoneNumber'
+                },
+                alertPhoneNumber: function() {
+                    alert(this.model.escape("phoneNumber"));
+                }
+            });
+
+            let aliceView = new ContactView({ model: ben });
+
+            ContactManager.start(aliceView);
+        </script>
+    </body>
+</html>
